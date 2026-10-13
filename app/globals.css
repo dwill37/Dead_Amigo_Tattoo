@@ -1,0 +1,249 @@
+@import "tailwindcss";
+
+/*
+ * Dead Amigo tokens. One dark theme (the brand is a black flash sheet),
+ * one accent pulled from the logo's pink, sharp corners everywhere.
+ */
+@theme {
+  --color-ink: #0b0a0a;
+  --color-coal: #141212;
+  --color-ash: #1e1a1a;
+  --color-line: #2c2727;
+  --color-bone: #f1ede6;
+  --color-smoke: #a59e96;
+  --color-blood: #ef2768;
+  --color-blood-deep: #c4134f; /* accent for text on bone surfaces (5:1) */
+  --color-glitch: #9de0e3;
+
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-marker: var(--font-marker-hand), ui-sans-serif, cursive;
+
+  --ease-snap: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-out-hard: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Damped-spring curves sampled into linear() so the intro runs before hydration. */
+  --ease-stamp: linear(0, 0.0247, 0.0901, 0.1839, 0.2952, 0.4149, 0.5353, 0.6506, 0.7564, 0.85, 0.9295, 0.9945, 1.045, 1.0821, 1.1069, 1.121, 1.1262, 1.1242, 1.1168, 1.1056, 1.0918, 1.0768, 1.0616, 1.0469, 1.0332, 1.0211, 1.0107, 1.0021, 0.9954, 0.9904, 0.987, 0.985, 0.9841, 0.9842, 0.985, 0.9864, 1);
+  --ease-slam: linear(0, 0.0133, 0.0488, 0.1007, 0.1638, 0.234, 0.308, 0.383, 0.4568, 0.5279, 0.595, 0.6573, 0.7143, 0.7658, 0.8116, 0.8519, 0.8869, 0.917, 0.9423, 0.9634, 0.9807, 0.9946, 1.0055, 1.0138, 1.0198, 1.024, 1.0267, 1.028, 1.0284, 1.0279, 1.0268, 1.0253, 1.0235, 1.0215, 1.0194, 1.0173, 1);
+  --ease-pop: linear(0, 0.0299, 0.1086, 0.2207, 0.3522, 0.4911, 0.6279, 0.7552, 0.8678, 0.9626, 1.0381, 1.0945, 1.1327, 1.1547, 1.1628, 1.1598, 1.1483, 1.1309, 1.1099, 1.0874, 1.0649, 1.0438, 1.0249, 1.0089, 0.9959, 0.9862, 0.9794, 0.9753, 0.9736, 0.9737, 0.9754, 0.978, 0.9814, 0.985, 0.9887, 0.9922, 1);
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    background: var(--color-ink);
+    scroll-behavior: smooth;
+    scroll-padding-top: 4.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--color-ink);
+    color: var(--color-bone);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a,
+  button {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgb(239 39 104 / 0.25);
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  ::selection {
+    background: var(--color-blood);
+    color: var(--color-ink);
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-blood);
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+@layer components {
+  /* Poster type: Archivo squeezed to its narrowest cut at Black weight. */
+  .display {
+    font-variation-settings: "wdth" 62;
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 0.86;
+    letter-spacing: -0.012em;
+  }
+  .marker {
+    font-family: var(--font-marker);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  /* Hard printed shadow, like an offset flash sheet. */
+  .print-shadow {
+    box-shadow: 6px 6px 0 0 var(--color-blood);
+  }
+
+  /* Dashed stencil cut-line border. */
+  .cutline {
+    background-image:
+      linear-gradient(90deg, var(--color-line) 50%, transparent 50%),
+      linear-gradient(90deg, var(--color-line) 50%, transparent 50%);
+    background-size: 14px 1px;
+    background-repeat: repeat-x;
+    background-position: top, bottom;
+  }
+
+  /* Masking tape strip pinned on the flash cards. */
+  .tape {
+    background: rgb(241 237 230 / 0.82);
+    box-shadow: 0 1px 0 rgb(0 0 0 / 0.25);
+    clip-path: polygon(2% 8%, 98% 0, 100% 92%, 0 100%);
+  }
+}
+
+/* Paper grain, fixed and non-interactive so it never repaints on scroll. */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- Hero intro (CSS-driven: plays on first paint, no hydration wait) ---------- */
+
+.intro {
+  animation: intro-gone 0s linear 1.45s forwards;
+}
+.intro-half {
+  animation: var(--split) 0.62s var(--ease-snap) 0.62s forwards;
+}
+.intro-top {
+  --split: split-up;
+  clip-path: polygon(0 0, 100% 0, 100% 50.4%, 91% 46%, 83% 53%, 72% 47%, 61% 54%, 49% 46.5%, 38% 53.5%, 27% 46%, 16% 52.5%, 7% 47%, 0 51%);
+}
+.intro-bottom {
+  --split: split-down;
+  clip-path: polygon(0 51%, 7% 47%, 16% 52.5%, 27% 46%, 38% 53.5%, 49% 46.5%, 61% 54%, 72% 47%, 83% 53%, 91% 46%, 100% 50.4%, 100% 100%, 0 100%);
+}
+.intro-stamp {
+  animation: stamp 0.6s var(--ease-stamp) 0.05s both;
+}
+.intro-glitch {
+  animation: glitch 0.32s steps(2, end) 0.42s both;
+}
+.hero-photo {
+  animation: hero-zoom 1.6s var(--ease-out-hard) 0.62s both;
+}
+/*
+ * fill-mode "forwards" (not "both"): the words paint in place on the first
+ * frame, hidden behind the intro slab, so the H1 counts as the LCP element.
+ * They drop into their masks just before the slab tears, then slam back up.
+ */
+.slam {
+  display: inline-block;
+  animation: slam 0.7s var(--ease-slam) forwards;
+  animation-delay: calc(0.5s + var(--i) * 0.06s);
+}
+.underline-draw {
+  clip-path: inset(0 100% 0 0);
+  animation: draw 0.42s var(--ease-out-hard) 1.3s forwards;
+}
+.pop {
+  animation: pop 0.55s var(--ease-pop) both;
+  animation-delay: calc(1.32s + var(--i) * 0.07s);
+}
+
+@keyframes intro-gone {
+  to {
+    visibility: hidden;
+  }
+}
+@keyframes split-up {
+  to {
+    transform: translate3d(0, -104%, 0) rotate(-2deg);
+  }
+}
+@keyframes split-down {
+  to {
+    transform: translate3d(0, 104%, 0) rotate(1.5deg);
+  }
+}
+@keyframes stamp {
+  from {
+    transform: scale(1.15);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes glitch {
+  0% {
+    transform: translate3d(-6px, 2px, 0);
+  }
+  50% {
+    transform: translate3d(5px, -2px, 0);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes hero-zoom {
+  from {
+    transform: scale(1.14);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes slam {
+  from {
+    transform: translate3d(0, 108%, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes draw {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes pop {
+  from {
+    transform: scale(0.82) translate3d(0, 10px, 0);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* Reduced motion: no intro slab, everything already in place. */
+@media (prefers-reduced-motion: reduce) {
+  .intro {
+    display: none;
+  }
+  .hero-photo,
+  .slam,
+  .pop {
+    animation: none;
+  }
+  .underline-draw {
+    animation: none;
+    clip-path: none;
+  }
+}
